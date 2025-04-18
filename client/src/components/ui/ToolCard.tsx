@@ -18,7 +18,7 @@ interface ToolCardProps {
 const ToolCard = ({ tool }: ToolCardProps) => {
   return (
     <div className="group relative">
-      <div className="relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
+      <div className="relative bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 hover:border-gray-200 hover:translate-y-[-4px]">
         <div className="h-48 bg-gray-200 aspect-w-16 aspect-h-9">
           <img 
             src={tool.image} 
@@ -27,10 +27,10 @@ const ToolCard = ({ tool }: ToolCardProps) => {
           />
         </div>
         <div className="p-6">
-          <h3 className="text-lg font-semibold text-neutral-900">
+          <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-primary transition-colors duration-300">
             {tool.title}
           </h3>
-          <p className="mt-2 text-base text-neutral-500">
+          <p className="mt-2 text-base text-neutral-600 leading-relaxed">
             {tool.description}
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -40,12 +40,12 @@ const ToolCard = ({ tool }: ToolCardProps) => {
               </Badge>
             ))}
           </div>
-          <div className="mt-6">
+          <div className="mt-6 pt-3 border-t border-gray-100">
             <Link href={tool.link}>
-              <a className="text-primary hover:text-primary/80 font-medium flex items-center">
+              <span className="text-primary hover:text-primary/80 font-medium flex items-center cursor-pointer">
                 Learn more
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </span>
             </Link>
           </div>
         </div>
