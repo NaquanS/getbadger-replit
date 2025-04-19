@@ -1,10 +1,22 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertContactSchema, insertNewsletterSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
+import { setupAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Set up authentication
+  setupAuth(app);
+
+  // Middleware to check if user is authenticated
+  const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    res.status(401).json({ message: "Not authenticated" });
+  };
+
   // API routes for contact form submissions
   app.post("/api/contacts", async (req: Request, res: Response) => {
     try {
@@ -42,6 +54,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(500).json({ message: "An unexpected error occurred" });
       }
     }
+  });
+
+  // Protected API routes - only accessible when logged in
+  app.get("/api/dashboard", isAuthenticated, async (req: Request, res: Response) => {
+    // This route is protected and only accessible to authenticated users
+    const contacts = await storage.getContacts();
+    const newsletters = await storage.getNewsletters();
+    
+    res.json({
+      user: req.user,
+      stats: {
+        contacts: contacts.length,
+        newsletters: newsletters.length
+      }
+    });
   });
 
   const httpServer = createServer(app);
