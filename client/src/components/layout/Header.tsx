@@ -1,14 +1,25 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 import MobileMenu from './MobileMenu';
-import { Menu } from 'lucide-react';
+import { LogOut, Menu, User } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 
 const Header = () => {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, logoutMutation } = useAuth();
 
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
+  const handleLogout = () => logoutMutation.mutate();
 
   const isActive = (path: string) => location === path ? 'text-primary font-semibold' : 'text-neutral-700';
 
@@ -44,14 +55,47 @@ const Header = () => {
             </nav>
           </div>
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/contact">
-              <span className="text-neutral-700 hover:text-primary text-sm font-medium transition-colors duration-200 cursor-pointer">Sign in</span>
-            </Link>
-            <Button asChild className="shadow-md hover:shadow-lg transition-shadow duration-200">
-              <Link href="/contact">
-                <span>Get Started</span>
-              </Link>
-            </Button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center space-x-2 hover:bg-muted">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {user.username.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="font-medium">{user.username}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard" className="cursor-pointer w-full">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="cursor-pointer text-red-600 focus:text-red-600"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Link href="/auth">
+                  <span className="text-neutral-700 hover:text-primary text-sm font-medium transition-colors duration-200 cursor-pointer">Sign in</span>
+                </Link>
+                <Button asChild className="shadow-md hover:shadow-lg transition-shadow duration-200">
+                  <Link href="/auth">
+                    <span>Get Started</span>
+                  </Link>
+                </Button>
+              </>
+            )}
           </div>
           <div className="flex md:hidden">
             <Button variant="ghost" size="icon" onClick={toggleMobileMenu} aria-label="Open main menu">

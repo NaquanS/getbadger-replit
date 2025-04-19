@@ -1,6 +1,8 @@
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { LogOut, User, X } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -8,6 +10,12 @@ interface MobileMenuProps {
 }
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
+  const { user, logoutMutation } = useAuth();
+  const handleLogout = () => {
+    logoutMutation.mutate();
+    onClose();
+  };
+  
   if (!isOpen) return null;
 
   return (
@@ -50,18 +58,39 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
         </div>
         
         <div className="pt-5 mt-6 border-t border-gray-200">
-          <Link href="/contact">
-            <div className="text-neutral-700 hover:bg-gray-50 hover:text-primary block px-4 py-3 rounded-md text-base font-medium cursor-pointer transition-colors duration-200" onClick={onClose}>
-              Sign in
-            </div>
-          </Link>
-          <div className="mt-4 px-4">
-            <Button className="w-full shadow-md" asChild>
-              <Link href="/contact">
-                <span onClick={onClose}>Get Started</span>
+          {user ? (
+            <>
+              <div className="px-4 py-3">
+                <p className="text-sm font-medium text-gray-500">Signed in as</p>
+                <p className="text-base font-medium text-gray-900 truncate">{user.username}</p>
+              </div>
+              <Link href="/dashboard">
+                <div className="flex items-center text-neutral-700 hover:bg-gray-50 hover:text-primary px-4 py-3 rounded-md text-base font-medium cursor-pointer transition-colors duration-200" onClick={onClose}>
+                  <User className="h-5 w-5 mr-3" />
+                  Dashboard
+                </div>
               </Link>
-            </Button>
-          </div>
+              <div className="text-red-600 hover:bg-red-50 flex items-center px-4 py-3 rounded-md text-base font-medium cursor-pointer transition-colors duration-200" onClick={handleLogout}>
+                <LogOut className="h-5 w-5 mr-3" />
+                Sign out
+              </div>
+            </>
+          ) : (
+            <>
+              <Link href="/auth">
+                <div className="text-neutral-700 hover:bg-gray-50 hover:text-primary block px-4 py-3 rounded-md text-base font-medium cursor-pointer transition-colors duration-200" onClick={onClose}>
+                  Sign in
+                </div>
+              </Link>
+              <div className="mt-4 px-4">
+                <Button className="w-full shadow-md" asChild>
+                  <Link href="/auth">
+                    <span onClick={onClose}>Get Started</span>
+                  </Link>
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
