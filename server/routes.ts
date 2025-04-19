@@ -71,6 +71,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Get all contacts - protected route
+  app.get("/api/dashboard/contacts", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const contacts = await storage.getContacts();
+      res.json(contacts);
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+      res.status(500).json({ message: "Error fetching contacts" });
+    }
+  });
+
+  // Get all newsletters - protected route
+  app.get("/api/dashboard/newsletters", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const newsletters = await storage.getNewsletters();
+      res.json(newsletters);
+    } catch (error) {
+      console.error("Error fetching newsletters:", error);
+      res.status(500).json({ message: "Error fetching newsletters" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
