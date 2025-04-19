@@ -18,33 +18,36 @@ import DashboardPage from "@/pages/dashboard-page";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
-function Router() {
+// Standard layout with header and footer
+function StandardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-grow">
-        <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/about" component={About} />
-          <Route path="/contact" component={Contact} />
-          <Route path="/tools" component={Tools} />
-          <Route path="/auth" component={AuthPage} />
-          <ProtectedRoute path="/dashboard" component={DashboardPage} />
-          <Route component={NotFound} />
-        </Switch>
-      </main>
+      <main className="flex-grow">{children}</main>
       <Footer />
     </div>
   );
 }
 
-// Special routes that don't use standard layout
-function SpecialRoutes() {
+// Main router with all routes
+function Router() {
   return (
     <Switch>
+      {/* Auth page doesn't use standard layout */}
       <Route path="/auth" component={AuthPage} />
+      
+      {/* Routes with standard layout */}
       <Route>
-        <Router />
+        <StandardLayout>
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/about" component={About} />
+            <Route path="/contact" component={Contact} />
+            <Route path="/tools" component={Tools} />
+            <ProtectedRoute path="/dashboard" component={DashboardPage} />
+            <Route component={NotFound} />
+          </Switch>
+        </StandardLayout>
       </Route>
     </Switch>
   );
@@ -55,7 +58,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
-          <SpecialRoutes />
+          <Router />
         </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>

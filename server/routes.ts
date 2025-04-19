@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertContactSchema, insertNewsletterSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import { setupAuth } from "./auth";
+import { ZodError } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication
@@ -24,9 +25,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const contact = await storage.createContact(contactData);
       res.status(201).json({ message: "Contact message submitted successfully", id: contact.id });
     } catch (error) {
+      console.error("Error creating contact:", error);
       if (error instanceof Error) {
-        const validationError = fromZodError(error);
-        res.status(400).json({ message: validationError.message });
+        res.status(400).json({ message: error.message });
       } else {
         res.status(500).json({ message: "An unexpected error occurred" });
       }
@@ -47,9 +48,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newsletter = await storage.createNewsletter(newsletterData);
       res.status(201).json({ message: "Newsletter subscription successful", id: newsletter.id });
     } catch (error) {
+      console.error("Error creating newsletter subscription:", error);
       if (error instanceof Error) {
-        const validationError = fromZodError(error);
-        res.status(400).json({ message: validationError.message });
+        res.status(400).json({ message: error.message });
       } else {
         res.status(500).json({ message: "An unexpected error occurred" });
       }
