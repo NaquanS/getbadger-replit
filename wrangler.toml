@@ -1,8 +1,6 @@
-name = "getbadger-worker"
-compatibility_date = "2025-04-22"
-
-[build]
-  command = "npm run build" # This ensures Wrangler runs the build before deploying
-
-[[assets]]
-  path = "./dist"  # Path to the Vite build output
+  name = "getbadger-worker"
+  main = "dist/index.js"
+  compatibility_date = "2025-01-01"
+  [assets]
+  directory = "./dist"
+  binding = "ASSETS"
