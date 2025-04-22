@@ -4,3 +4,5 @@
   [assets]
   directory = "./dist"
   binding = "ASSETS"
+  [build]
+  nodejs_compat = true
